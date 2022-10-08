@@ -1,5 +1,7 @@
+const { Error } = require('mongoose');
 const { AuthenticationError } = require('../error/AuthenticationError');
 const { User } = require('../models');
+const { signToken } = require('../utils/auth');
 
 function checkIfLoggedIn (context){
   if(!context.user){
@@ -35,12 +37,12 @@ const resolvers = {
     login: async (parent, { email, password }) => {
     const user = await User.findOne({email: email});
       if (!user) {
-        throw new AuthenticationError('User or Password is incorrect');
+        throw new Error('User or Password is incorrect');
       }
 
     const correctPw = await user.isCorrectPassword(password); // in user model isCorrectPAssword 
       if (!correctPw) {
-        throw new AuthenticationError('User or Password is incorrect')
+        throw new Error('User or Password is incorrect')
       }
 
     const token = signToken(user);
